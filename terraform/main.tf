@@ -14,18 +14,7 @@ provider "ibm" {
   region           = var.region
 }
 
-variable "ibmcloud_api_key" {
-  description = "API key para autenticar con IBM Cloud."
-  type        = string
-  default = "ngznEKwz87tO6VWwNDtYGApkpsWE3FYEwuw_ES1LT4j2"
-  sensitive   = true
-}
 
-variable "region" {
-  description = "Región donde se desplegarán los recursos."
-  type        = string
-  default     = "eu-gb"
-}
 
 resource "ibm_resource_group" "rg_rafa" {
   name = "Stemdo_Sandbox"
@@ -33,6 +22,12 @@ resource "ibm_resource_group" "rg_rafa" {
 import {
   id = "4364ced224cf420fa07d8bf70a8d70df"
   to = ibm_resource_group.rg_rafa
+}
+
+resource "ibm_is_vpc" "vpc_rafa" {
+  # name             = var.vpc_name
+  name = "vpc-rafa"
+  resource_group   = ibm_resource_group.rg_rafa.id
 }
 
 output "resource_group_id" {
