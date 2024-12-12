@@ -31,7 +31,7 @@ resource "ibm_resource_group" "rg_rafa" {
   name = "Stemdo_Sandbox"
 }
 import {
-  id = "eu-gb.workspace.ibmsch-RafaGll.b01ba383"
+  id = "4364ced224cf420fa07d8bf70a8d70df"
   to = ibm_resource_group.rg_rafa
 }
 
