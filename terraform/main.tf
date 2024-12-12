@@ -17,6 +17,7 @@ provider "ibm" {
 variable "ibmcloud_api_key" {
   description = "API key para autenticar con IBM Cloud."
   type        = string
+  default = "ngznEKwz87tO6VWwNDtYGApkpsWE3FYEwuw_ES1LT4j2"
   sensitive   = true
 }
 
@@ -26,11 +27,15 @@ variable "region" {
   default     = "eu-gb"
 }
 
-resource "ibm_resource_group" "example" {
-  name = "example-resource-group"
+resource "ibm_resource_group" "rg_rafa" {
+  name = "Stemdo_Sandbox"
+}
+import {
+  id = "eu-gb.workspace.ibmsch-RafaGll.b01ba383"
+  to = ibm_resource_group.rg_rafa
 }
 
 output "resource_group_id" {
   description = "ID del grupo de recursos creado."
-  value       = ibm_resource_group.example.id
+  value       = ibm_resource_group.rg_rafa.id
 }
