@@ -61,7 +61,7 @@ resource "ibm_is_ssh_key" "ssh_key" {
 }
 
 resource "ibm_is_public_gateway" "public_gateway_abermudez" {
-  name           = "vpc-abermudez"
+  name           = "vpc-rafa"
   vpc            = ibm_is_vpc.vpc_rafa.id
   zone           = "eu-gb-1"
   resource_group = var.resource_group_id
