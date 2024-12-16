@@ -55,7 +55,7 @@ resource "ibm_is_security_group_rule" "ssh_rule" {
 resource "ibm_is_ssh_key" "ssh_key" {
   name           = "ssh-key-rafa"
   public_key     = <<-EOF
-  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHiEOdwYl36RSushFuDIosheEYGOF91RdrIOyS1rfv4H rafaelgonzalezllamas2001@gmail.com
+  ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCU94A3wzNYKAAYrOgQ6OGPcLVNYb73+FF5r/Vp/upSghDbdRzW95xm4BBTqaR+8Dm81UFycPjJlYnUaKYlrjGpTxKLoX6myC/RA0ddYH9WAD6ZRqdXepELdoikiZyvMOaMgOT5t6t9z9tWCuzkgvc5L8goYfHXzP44iGrkqR3Vf0Q3PmnHedFFFShbcT3p1vKR/9Z7VFF2my0Weg0C7tpE7VRBQ1dFlhzKCbAhWQ9SqZUowlh7/ASGzgX9K9czV6MtvE932YudPlSKrpD1GRejY+sndAfl1yOObyvKkUXmMjoqWIsRV3QBJtTNJNQk09MHMmwNEvTlW7T+ffe3Asqz user@stemdo
   EOF
   resource_group = var.resource_group_id
 }
