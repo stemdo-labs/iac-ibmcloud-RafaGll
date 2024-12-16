@@ -72,7 +72,7 @@ resource "ibm_is_instance" "vm_rafa" {
   vpc     = ibm_is_vpc.vpc_rafa.id
   profile = "bx2-2x8"
   zone    = ibm_is_subnet.subnet_rafa.zone
-  image   = "ibm-ubuntu-22-04-1-minimal-amd64-2"
+  image   = "r018-941eb02e-ceb9-44c8-895b-b31d241f43b5"
   primary_network_interface {
     subnet          = ibm_is_subnet.subnet_rafa.id
     security_groups = [ibm_is_security_group.security_group.id]
