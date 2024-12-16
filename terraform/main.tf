@@ -51,6 +51,14 @@ resource "ibm_is_security_group_rule" "ssh_rule" {
     port_max = 22
   }
 }
+
+resource "ibm_is_floating_ip" "public_ip" {
+  name = "public-ip-rafa"
+  target = ibm_is_instance.vm_rafa.primary_network_interface[0].id
+  resource_group = var.resource_group_id
+  depends_on = [ibm_is_instance.vm_rafa]
+
+}
 # Añadir un recurso para la clave SSH
 resource "ibm_is_ssh_key" "ssh_key" {
   name           = "ssh-key-rafa"
