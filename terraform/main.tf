@@ -13,6 +13,13 @@ provider "ibm" {
   ibmcloud_api_key = var.ibmcloud_api_key
   region           = var.region
 }
+resource "ibm_resource_group" "rg_rafa" {
+  name = "Stemdo_Sandbox"
+}
+import {
+  id = "4364ced224cf420fa07d8bf70a8d70df"
+  to = ibm_resource_group.rg_rafa
+}
 
 
 resource "ibm_is_vpc" "vpc_rafa" {
