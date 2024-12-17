@@ -94,7 +94,10 @@ resource "ibm_cr_namespace" "cr_namespace" {
     resource_group_id = var.resource_group_id
 }
 
-
+resource "ibm_cr_retention_policy" "cr_retention_policy" {
+    namespace = ibm_cr_namespace.cr_namespace.id
+    images_per_repo = 10
+}
 
 resource "ibm_is_vpc" "vpc_cluster" {
   name           = "vpc-cluster-rafa"
@@ -107,12 +110,4 @@ resource "ibm_is_subnet" "subnet_cluster" {
   resource_group  = var.resource_group_id
   zone            = "eu-gb-1"
   ipv4_cidr_block = "10.242.0.0/24"
-}
-
-resource "ibm_resource_instance" "resource_instance" {
-  name     = "rafa-cos-instance"
-  service  = "cloud-object-storage"
-  plan     = "lite"
-  location = var.region
-  resource_group_id = var.resource_group_id
 }
