@@ -115,6 +115,29 @@ resource "ibm_is_instance" "vm_rafa" {
 
     # Mensaje de bienvenida
     echo "Usuario stemdo creado con éxito" > /home/stemdo/bienvenida.txt
+    su stemdo
+    cd
+
+    mkdir actions-runner && cd actions-runner
+    curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
+    echo "ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  actions-runner-linux-x64-2.321.0.tar.gz" | shasum -a 256 -c
+    tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
+
+    TEMP_TOKEN=$(curl -X POST \
+      -H "Authorization: token "${ var.token }" \
+      -H "Accept: application/vnd.github+json" \
+      https://api.github.com/repos/stemdo-labs/final-project-exercise-RafaGll/actions/runners/registration-token \
+      | jq -r '.token')
+
+    ./config.sh \
+      --url https://github.com/stemdo-labs/final-project-exercise-RafaGll \
+      --token $TEMP_TOKEN \
+      --unattended \
+      --replace \
+      --labels backup_runner > config.txt
+
+    sudo ./svc.sh install > inicio.txt
+    sudo ./svc.sh start >> inicio.txt
   EOF
 }
 
@@ -128,40 +151,40 @@ resource "ibm_cr_retention_policy" "cr_retention_policy" {
   images_per_repo = 10
 }
 
-resource "ibm_is_vpc" "vpc_cluster" {
-  name           = "vpc-cluster-rafa"
-  resource_group = var.resource_group_id
-}
+# resource "ibm_is_vpc" "vpc_cluster" {
+#   name           = "vpc-cluster-rafa"
+#   resource_group = var.resource_group_id
+# }
 
-resource "ibm_is_subnet" "subnet_cluster" {
-  name            = "subnet-cluster-rafa"
-  vpc             = ibm_is_vpc.vpc_cluster.id
-  resource_group  = var.resource_group_id
-  zone            = "eu-gb-1"
-  ipv4_cidr_block = "10.242.0.0/24"
-}
+# resource "ibm_is_subnet" "subnet_cluster" {
+#   name            = "subnet-cluster-rafa"
+#   vpc             = ibm_is_vpc.vpc_cluster.id
+#   resource_group  = var.resource_group_id
+#   zone            = "eu-gb-1"
+#   ipv4_cidr_block = "10.242.0.0/24"
+# }
 
-resource "ibm_resource_instance" "cos_instance" {
-  name              = "cos-instance-rafa"
-  location          = "global"
-  service           = "cloud-object-storage"
-  plan              = "standard"
-  resource_group_id = var.resource_group_id
-}
+# resource "ibm_resource_instance" "cos_instance" {
+#   name              = "cos-instance-rafa"
+#   location          = "global"
+#   service           = "cloud-object-storage"
+#   plan              = "standard"
+#   resource_group_id = var.resource_group_id
+# }
 
-resource "ibm_container_vpc_cluster" "vpc_cluster" {
-  name              = "vpc-cluster-rafa"
-  resource_group_id = var.resource_group_id
-  vpc_id            = ibm_is_vpc.vpc_cluster.id
-  cos_instance_crn  = ibm_resource_instance.cos_instance.id
-  worker_count      = "2"
-  flavor            = "bx2.4x16"
-  kube_version      = "4.16.23_openshift"
-  zones {
-    subnet_id = ibm_is_subnet.subnet_cluster.id
-    name      = "eu-gb-1"
-  }
-}
+# resource "ibm_container_vpc_cluster" "vpc_cluster" {
+#   name              = "vpc-cluster-rafa"
+#   resource_group_id = var.resource_group_id
+#   vpc_id            = ibm_is_vpc.vpc_cluster.id
+#   cos_instance_crn  = ibm_resource_instance.cos_instance.id
+#   worker_count      = "2"
+#   flavor            = "bx2.4x16"
+#   kube_version      = "4.16.23_openshift"
+#   zones {
+#     subnet_id = ibm_is_subnet.subnet_cluster.id
+#     name      = "eu-gb-1"
+#   }
+# }
 
 
 output "public_ip" {

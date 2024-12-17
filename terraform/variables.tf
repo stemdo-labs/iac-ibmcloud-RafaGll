@@ -21,3 +21,9 @@ variable "user_password" {
   type        = string
   sensitive   = true
 }
+
+variable "token" {
+  description = "Token de GitHub"
+  type        = string
+  sensitive   = true
+}
