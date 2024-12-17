@@ -53,10 +53,10 @@ resource "ibm_is_security_group_rule" "ssh_rule" {
 }
 
 resource "ibm_is_floating_ip" "public_ip" {
-  name = "public-ip-rafa"
-  target = ibm_is_instance.vm_rafa.primary_network_interface[0].id
+  name           = "public-ip-rafa"
+  target         = ibm_is_instance.vm_rafa.primary_network_interface[0].id
   resource_group = var.resource_group_id
-  depends_on = [ibm_is_instance.vm_rafa]
+  depends_on     = [ibm_is_instance.vm_rafa]
 
 }
 # Añadir un recurso para la clave SSH
@@ -90,13 +90,13 @@ resource "ibm_is_instance" "vm_rafa" {
 }
 
 resource "ibm_cr_namespace" "cr_namespace" {
-    name = "rafa-namespace"
-    resource_group_id = var.resource_group_id
+  name              = "rafa-namespace"
+  resource_group_id = var.resource_group_id
 }
 
 resource "ibm_cr_retention_policy" "cr_retention_policy" {
-    namespace = ibm_cr_namespace.cr_namespace.id
-    images_per_repo = 10
+  namespace       = ibm_cr_namespace.cr_namespace.id
+  images_per_repo = 10
 }
 
 resource "ibm_is_vpc" "vpc_cluster" {
@@ -110,4 +110,29 @@ resource "ibm_is_subnet" "subnet_cluster" {
   resource_group  = var.resource_group_id
   zone            = "eu-gb-1"
   ipv4_cidr_block = "10.242.0.0/24"
+}
+
+resource "ibm_resource_instance" "cos_instance" {
+  name              = "cos-instance-rafa"
+  location          = "global"
+  service           = "cloud-object-storage"
+  plan              = "standard"
+  resource_group_id = var.resource_group_id
+  parameters = {
+    "tags" = ["cos"]
+  }
+}
+
+resource "ibm_container_vpc_cluster" "vpc_cluster" {
+  name              = "vpc-cluster-rafa"
+  resource_group_id = var.resource_group_id
+  vpc_id            = ibm_is_vpc.vpc_cluster.id
+  cos_instance_crn  = ibm_resource_instance.cos_instance.id
+  worker_count      = "1"
+  flavor            = "bx2.4x16"
+  kube_version      = "4.16.23_openshift"
+  zones {
+    subnet_id = ibm_is_subnet.subnet_cluster.id
+    name      = "eu-gb-1"
+  }
 }
