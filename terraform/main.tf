@@ -118,7 +118,7 @@ resource "ibm_is_instance" "vm_rafa" {
     su stemdo
     cd ~
 
-    su - stemdo -c "mkdir /home/stemdoactions-runner && cd /home/stemdo/actions-runner"
+    su - stemdo -c "mkdir /home/stemdo/actions-runner && cd /home/stemdo/actions-runner"
     su - stemdo -c "curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz"
     su - stemdo -c "echo "ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  actions-runner-linux-x64-2.321.0.tar.gz" | shasum -a 256 -c"
     su - stemdo -c "tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz"
@@ -129,7 +129,7 @@ resource "ibm_is_instance" "vm_rafa" {
       https://api.github.com/repos/stemdo-labs/final-project-exercise-RafaGll/actions/runners/registration-token \
       | jq -r '.token')"
 
-    su - stemdo -c "$TEMP_TOKEN > token.txt"
+    su - stemdo -c "$TEMP_TOKEN > /home/stemdo/actions-runner/token.txt"
 
     su - stemdo -c "./config.sh \
       --url https://github.com/stemdo-labs/final-project-exercise-RafaGll \
