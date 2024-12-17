@@ -118,9 +118,6 @@ resource "ibm_resource_instance" "cos_instance" {
   service           = "cloud-object-storage"
   plan              = "standard"
   resource_group_id = var.resource_group_id
-  parameters = {
-    "tags" = ["cos"]
-  }
 }
 
 resource "ibm_container_vpc_cluster" "vpc_cluster" {
