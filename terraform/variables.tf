@@ -15,3 +15,9 @@ variable "region" {
   type        = string
   default     = "eu-gb"
 }
+
+variable "user_password" {
+  description = "Contraseña del usuario que se creará en la VM"
+  type        = string
+  sensitive   = true
+}

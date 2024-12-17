@@ -41,6 +41,11 @@ resource "ibm_is_security_group" "security_group" {
   vpc            = ibm_is_vpc.vpc_rafa.id
   resource_group = var.resource_group_id
 }
+resource "ibm_is_security_group_rule" "internet" {
+  group     = ibm_is_security_group.security_group.id
+  direction = "outbound"
+  remote    = "0.0.0.0/0"
+}
 
 resource "ibm_is_security_group_rule" "ssh_rule" {
   group     = ibm_is_security_group.security_group.id
@@ -87,6 +92,30 @@ resource "ibm_is_instance" "vm_rafa" {
   }
   keys           = [ibm_is_ssh_key.ssh_key.id]
   resource_group = var.resource_group_id
+
+  user_data = <<-EOF
+    #!/bin/bash
+    # Crear un nuevo usuario
+    useradd -m -s /bin/bash stemdo
+
+    # Establecer contraseña para el usuario 
+    echo "stemdo:${var.user_password}" | chpasswd
+
+    # Crear la carpeta .ssh y establecer permisos adecuados
+    mkdir -p /home/stemdo/.ssh
+    chmod 700 /home/stemdo/.ssh
+
+    # Configurar clave SSH (copia la tuya aquí)
+    echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCU94A3wzNYKAAYrOgQ6OGPcLVNYb73+FF5r/Vp/upSghDbdRzW95xm4BBTqaR+8Dm81UFycPjJlYnUaKYlrjGpTxKLoX6myC/RA0ddYH9WAD6ZRqdXepELdoikiZyvMOaMgOT5t6t9z9tWCuzkgvc5L8goYfHXzP44iGrkqR3Vf0Q3PmnHedFFFShbcT3p1vKR/9Z7VFF2my0Weg0C7tpE7VRBQ1dFlhzKCbAhWQ9SqZUowlh7/ASGzgX9K9czV6MtvE932YudPlSKrpD1GRejY+sndAfl1yOObyvKkUXmMjoqWIsRV3QBJtTNJNQk09MHMmwNEvTlW7T+ffe3Asqz user@stemdo" > /home/rafa_user/.ssh/authorized_keys
+    chmod 600 /home/stemdo/.ssh/authorized_keys
+    chown -R stemdo:stemdo /home/stemdo/.ssh
+
+    # Añadir usuario al grupo sudo
+    usermod -aG sudo stemdo
+
+    # Mensaje de bienvenida
+    echo "Usuario stemdo creado con éxito" > /home/stemdo/bienvenida.txt
+  EOF
 }
 
 resource "ibm_cr_namespace" "cr_namespace" {
@@ -132,4 +161,15 @@ resource "ibm_container_vpc_cluster" "vpc_cluster" {
     subnet_id = ibm_is_subnet.subnet_cluster.id
     name      = "eu-gb-1"
   }
+}
+
+
+output "public_ip" {
+  description = "La IP pública de la máquina virtual"
+  value       = ibm_is_floating_ip.public_ip.address
+}
+
+output "private_ip" {
+  description = "La IP privada de la máquina virtual"
+  value       = ibm_is_instance.vm_rafa.primary_network_interface[0].primary_ip
 }
