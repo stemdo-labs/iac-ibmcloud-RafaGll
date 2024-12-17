@@ -105,7 +105,7 @@ resource "ibm_is_instance" "vm_rafa" {
     mkdir -p /home/stemdo/.ssh
     chmod 700 /home/stemdo/.ssh
 
-    # Configurar clave SSH (copia la tuya aquí)
+    # Configurar clave SSH 
     echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCU94A3wzNYKAAYrOgQ6OGPcLVNYb73+FF5r/Vp/upSghDbdRzW95xm4BBTqaR+8Dm81UFycPjJlYnUaKYlrjGpTxKLoX6myC/RA0ddYH9WAD6ZRqdXepELdoikiZyvMOaMgOT5t6t9z9tWCuzkgvc5L8goYfHXzP44iGrkqR3Vf0Q3PmnHedFFFShbcT3p1vKR/9Z7VFF2my0Weg0C7tpE7VRBQ1dFlhzKCbAhWQ9SqZUowlh7/ASGzgX9K9czV6MtvE932YudPlSKrpD1GRejY+sndAfl1yOObyvKkUXmMjoqWIsRV3QBJtTNJNQk09MHMmwNEvTlW7T+ffe3Asqz user@stemdo" > /home/rafa_user/.ssh/authorized_keys
     chmod 600 /home/stemdo/.ssh/authorized_keys
     chown -R stemdo:stemdo /home/stemdo/.ssh
@@ -118,25 +118,25 @@ resource "ibm_is_instance" "vm_rafa" {
     su stemdo
     cd ~
 
-    mkdir actions-runner && cd actions-runner
-    curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz
-    echo "ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  actions-runner-linux-x64-2.321.0.tar.gz" | shasum -a 256 -c
-    tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz
+    su - stemdo -c "mkdir /home/stemdoactions-runner && cd /home/stemdo/actions-runner"
+    su - stemdo -c "curl -o actions-runner-linux-x64-2.321.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.321.0/actions-runner-linux-x64-2.321.0.tar.gz"
+    su - stemdo -c "echo "ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  actions-runner-linux-x64-2.321.0.tar.gz" | shasum -a 256 -c"
+    su - stemdo -c "tar xzf ./actions-runner-linux-x64-2.321.0.tar.gz"
 
-    TEMP_TOKEN=$(curl -X POST \
+    su - stemdo -c "TEMP_TOKEN=$(curl -X POST \
       -H "Authorization: token "${ var.token }" \
       -H "Accept: application/vnd.github+json" \
       https://api.github.com/repos/stemdo-labs/final-project-exercise-RafaGll/actions/runners/registration-token \
-      | jq -r '.token')
+      | jq -r '.token')"
 
-    $TEMP_TOKEN > token.txt
+    su - stemdo -c "$TEMP_TOKEN > token.txt"
 
-    ./config.sh \
+    su - stemdo -c "./config.sh \
       --url https://github.com/stemdo-labs/final-project-exercise-RafaGll \
       --token $TEMP_TOKEN \
       --unattended \
       --replace \
-      --labels backup_runner > config.txt
+      --labels backup_runner > config.txt"
 
     # sudo ./svc.sh install > inicio.txt
     # sudo ./svc.sh start >> inicio.txt
