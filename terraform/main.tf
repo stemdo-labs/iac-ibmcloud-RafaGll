@@ -105,7 +105,7 @@ resource "ibm_is_vpc" "vpc_cluster" {
 }
 
 resource "ibm_is_subnet" "subnet_cluster" {
-  name            = "subnet-cluster-acajas"
+  name            = "subnet-cluster-rafa"
   vpc             = ibm_is_vpc.vpc_cluster.id
   resource_group  = var.resource_group_id
   zone            = "eu-gb-1"
