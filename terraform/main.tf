@@ -73,7 +73,7 @@ resource "ibm_is_ssh_key" "ssh_key" {
   resource_group = var.resource_group_id
 }
 
-resource "ibm_is_public_gateway" "public_gateway_abermudez" {
+resource "ibm_is_public_gateway" "public_gateway_vm" {
   name           = "vpc-rafa"
   vpc            = ibm_is_vpc.vpc_rafa.id
   zone           = "eu-gb-1"
@@ -162,12 +162,30 @@ resource "ibm_is_vpc" "vpc_cluster" {
   resource_group = var.resource_group_id
 }
 
+resource "ibm_is_security_group" "sg_cluster" {
+  name           = "sg-cluster-rafa"
+  vpc            = ibm_is_vpc.vpc_cluster.id
+  resource_group = var.resource_group_id
+}
+resource "ibm_is_security_group_rule" "internet_cluster" {
+  group     = ibm_is_security_group.sg_cluster.id
+  direction = "outbound"
+  remote    = "0.0.0.0/0"
+}
+resource "ibm_is_public_gateway" "public_gateway_cluster" {
+  name           = "public-gateway-cluster-rafa"
+  vpc            = ibm_is_vpc.vpc_cluster.id
+  zone           = "eu-gb-1"
+  resource_group = var.resource_group_id
+}
+
 resource "ibm_is_subnet" "subnet_cluster" {
   name            = "subnet-cluster-rafa"
   vpc             = ibm_is_vpc.vpc_cluster.id
   resource_group  = var.resource_group_id
   zone            = "eu-gb-1"
   ipv4_cidr_block = "10.242.0.0/24"
+  public_gateway = ibm_is_public_gateway.public_gateway_cluster.id
 }
 
 resource "ibm_resource_instance" "cos_instance" {
