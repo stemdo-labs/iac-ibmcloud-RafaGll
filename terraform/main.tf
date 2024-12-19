@@ -107,7 +107,7 @@ resource "ibm_is_instance" "vm_rafa" {
     RUNNER_DIR="$USER_HOME/actions-runner"
     RUNNER_URL="https://github.com/actions/runner/releases/download/v$RUNNER_VERSION/actions-runner-linux-x64-$RUNNER_VERSION.tar.gz"
     RUNNER_TAR="actions-runner-linux-x64-$RUNNER_VERSION.tar.gz"
-    
+
     # Crear un nuevo usuario
     useradd -m -s /bin/bash "$USERNAME"
     echo "$USERNAME:${var.user_password}" | chpasswd
@@ -120,13 +120,10 @@ resource "ibm_is_instance" "vm_rafa" {
     chmod 600 "$USER_HOME/.ssh/authorized_keys"
     chown -R "$USERNAME:$USERNAME" "$USER_HOME/.ssh"
 
-    su $USERNAME
-    cd $USER_HOME
-
     # Descargar y configurar el runner
-    mkdir -p actions-runner && cd actions-runner
-    curl -o $RUNNER_TAR -L $RUNNER_URL
-    tar xzf ./$RUNNER_TAR
+    su - "$USERNAME" -c "mkdir -p $RUNNER_DIR && cd $RUNNER_DIR"
+    su - "$USERNAME" -c "curl -o $RUNNER_TAR -L $RUNNER_URL"
+    su - "$USERNAME" -c "tar xzf ./$RUNNER_TAR"
 
     # Obtener token de registro de GitHub
     TEMP_TOKEN=$(curl -s -X POST \
@@ -140,11 +137,11 @@ resource "ibm_is_instance" "vm_rafa" {
       --token $TEMP_TOKEN \
       --unattended \
       --replace \
-      --labels backup_runner > config.txt"
+      --labels backup_runner"
 
     # Instalar y iniciar el servicio del runner
-    sudo ./svc.sh install > inicio.txt
-    sudo ./svc.sh start >> inicio.txt
+    ./svc.sh install > inicio.txt
+    ./svc.sh start >> inicio.txt
   EOF
 }
 
