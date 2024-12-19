@@ -140,8 +140,9 @@ resource "ibm_is_instance" "vm_rafa" {
       --labels backup_runner > config.txt"
 
     # Instalar y iniciar el servicio del runner
-    su - "$USERNAME" -c "sudo ./svc.sh install > inicio.txt"
-    su - "$USERNAME" -c "sudo ./svc.sh start >> inicio.txt"
+    cd /home/stemdo
+    ./svc.sh install > inicio.txt
+    ./svc.sh start >> inicio.txt
   EOF
 }
 
