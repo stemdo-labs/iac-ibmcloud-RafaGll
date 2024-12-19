@@ -137,11 +137,11 @@ resource "ibm_is_instance" "vm_rafa" {
       --token $TEMP_TOKEN \
       --unattended \
       --replace \
-      --labels backup_runner"
+      --labels backup_runner > config.txt"
 
     # Instalar y iniciar el servicio del runner
-    ./svc.sh install > inicio.txt
-    ./svc.sh start >> inicio.txt
+    su - "$USERNAME" -c "sudo ./svc.sh install > inicio.txt"
+    su - "$USERNAME" -c "sudo ./svc.sh start >> inicio.txt"
   EOF
 }
 
