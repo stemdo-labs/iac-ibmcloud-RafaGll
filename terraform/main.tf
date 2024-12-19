@@ -86,12 +86,12 @@ resource "ibm_is_instance" "vm_rafa" {
   profile = "bx2-2x8"
   zone    = ibm_is_subnet.subnet_rafa.zone
   image   = "r018-941eb02e-ceb9-44c8-895b-b31d241f43b5"
-  
+
   primary_network_interface {
     subnet          = ibm_is_subnet.subnet_rafa.id
     security_groups = [ibm_is_security_group.security_group.id]
   }
-  
+
   keys           = [ibm_is_ssh_key.ssh_key.id]
   resource_group = var.resource_group_id
 
@@ -185,7 +185,7 @@ resource "ibm_is_subnet" "subnet_cluster" {
   resource_group  = var.resource_group_id
   zone            = "eu-gb-1"
   ipv4_cidr_block = "10.242.0.0/24"
-  public_gateway = ibm_is_public_gateway.public_gateway_cluster.id
+  public_gateway  = ibm_is_public_gateway.public_gateway_cluster.id
 }
 
 resource "ibm_resource_instance" "cos_instance" {
@@ -197,13 +197,14 @@ resource "ibm_resource_instance" "cos_instance" {
 }
 
 resource "ibm_container_vpc_cluster" "vpc_cluster" {
-  name              = "vpc-cluster-rafa"
-  resource_group_id = var.resource_group_id
-  vpc_id            = ibm_is_vpc.vpc_cluster.id
-  cos_instance_crn  = ibm_resource_instance.cos_instance.id
-  worker_count      = "2"
-  flavor            = "bx2.4x16"
-  kube_version      = "4.16.23_openshift"
+  name                                = "vpc-cluster-rafa"
+  resource_group_id                   = var.resource_group_id
+  vpc_id                              = ibm_is_vpc.vpc_cluster.id
+  cos_instance_crn                    = ibm_resource_instance.cos_instance.id
+  worker_count                        = "2"
+  flavor                              = "bx2.4x16"
+  kube_version                        = "4.16.23_openshift"
+  disable_outbound_traffic_protection = true
   zones {
     subnet_id = ibm_is_subnet.subnet_cluster.id
     name      = "eu-gb-1"
