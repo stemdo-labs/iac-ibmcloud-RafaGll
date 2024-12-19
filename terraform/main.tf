@@ -102,7 +102,7 @@ resource "ibm_is_instance" "vm_rafa" {
     # Variables
     USERNAME="stemdo"
     USER_HOME="/home/$USERNAME"
-    GITHUB_REPO="https://github.com/stemdo-labs/final-project-exercise-RafaGll"
+    GITHUB_REPO="https://github.com/stemdo-labs/iac-ibmcloud-RafaGll"
     RUNNER_VERSION="2.321.0"
     RUNNER_DIR="$USER_HOME/actions-runner"
     RUNNER_URL="https://github.com/actions/runner/releases/download/v$RUNNER_VERSION/actions-runner-linux-x64-$RUNNER_VERSION.tar.gz"
@@ -120,17 +120,19 @@ resource "ibm_is_instance" "vm_rafa" {
     chmod 600 "$USER_HOME/.ssh/authorized_keys"
     chown -R "$USERNAME:$USERNAME" "$USER_HOME/.ssh"
 
+    su $USERNAME
+    cd $USER_HOME
+
     # Descargar y configurar el runner
-    su - "$USERNAME" -c "mkdir -p $RUNNER_DIR && cd $RUNNER_DIR"
-    su - "$USERNAME" -c "curl -o $RUNNER_TAR -L $RUNNER_URL"
-    su - "$USERNAME" -c "echo \"ba46ba7ce3a4d7236b16fbe44419fb453bc08f866b24f04d549ec89f1722a29e  $RUNNER_TAR\" | shasum -a 256 -c"
-    su - "$USERNAME" -c "tar xzf ./$RUNNER_TAR"
+    mkdir -p actions-runner && cd actions-runner
+    curl -o $RUNNER_TAR -L $RUNNER_URL
+    tar xzf ./$RUNNER_TAR
 
     # Obtener token de registro de GitHub
     TEMP_TOKEN=$(curl -s -X POST \
       -H "Authorization: token ${var.token}" \
       -H "Accept: application/vnd.github+json" \
-      https://api.github.com/repos/stemdo-labs/final-project-exercise-RafaGll/actions/runners/registration-token | jq -r '.token')
+      https://api.github.com/repos/stemdo-labs/iac-ibmcloud-RafaGll/actions/runners/registration-token | jq -r '.token')
 
     # Configurar el runner
     su - "$USERNAME" -c "./config.sh \
@@ -141,8 +143,8 @@ resource "ibm_is_instance" "vm_rafa" {
       --labels backup_runner > config.txt"
 
     # Instalar y iniciar el servicio del runner
-    su - "$USERNAME" -c "sudo ./svc.sh install > inicio.txt"
-    su - "$USERNAME" -c "sudo ./svc.sh start >> inicio.txt"
+    sudo ./svc.sh install > inicio.txt
+    sudo ./svc.sh start >> inicio.txt
   EOF
 }
 
